@@ -1,0 +1,26 @@
+format_version: '23'
+project_type: flutter
+
+workflows:
+  shik_android:
+    title: Shik Android
+    steps:
+      - git-clone@8: {}
+      - flutter-installer@0:
+          inputs:
+            - version: stable
+      - script@1:
+          title: Build Android packages
+          inputs:
+            - content: |-
+                set -e
+                flutter pub get
+                flutter analyze
+                flutter build apk --release
+                flutter build appbundle --release
+                mkdir -p artifacts
+                cp build/app/outputs/flutter-apk/app-release.apk artifacts/shik-release.apk
+                cp build/app/outputs/bundle/release/app-release.aab artifacts/shik-release.aab
+      - deploy-to-bitrise-io@2:
+          inputs:
+            - deploy_path: artifacts
